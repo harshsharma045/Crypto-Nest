@@ -3,6 +3,7 @@ import { useCryptoState } from "../../Context/CryptoContext";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { CoinList } from "../../Config/api";
+
 import {
   ThemeProvider,
   createTheme,
@@ -18,31 +19,20 @@ import {
   TableBody,
   Paper,
   Pagination,
+  Box,
 } from "@mui/material";
 
-import { makeStyles } from "@material-ui/core";
 import { numberWithCommas } from "../Banner/Carousel";
-
-const useStyles = makeStyles(() => ({
-  row: {
-    backgroundColor: "#16171a",
-    cursor: "pointer",
-    "&:hover": {
-      backgroundColor: "#131111",
-    },
-    fontFamily: "Montserrat",
-  },
-  pagination: {
-    "& .MuiPaginationItem-root": { color: "gold" },
-  },
-}));
 
 function CoinsTable() {
   const [coins, setCoins] = useState([]);
   const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
-  const classes = useStyles();
+
+  const navigate = useNavigate();
+  const { currency, symbol } = useCryptoState();
+
   const darkTheme = createTheme({
     palette: {
       primary: {
@@ -51,7 +41,6 @@ function CoinsTable() {
       mode: "dark",
     },
   });
-  const { currency, symbol } = useCryptoState();
 
   const fetchCoins = async () => {
     setLoading(true);
@@ -59,6 +48,7 @@ function CoinsTable() {
     setCoins(data);
     setLoading(false);
   };
+
   useEffect(() => {
     fetchCoins();
   }, [currency]);
@@ -71,48 +61,53 @@ function CoinsTable() {
     );
   };
 
-  const navigate = useNavigate();
+  const rowStyle = {
+    backgroundColor: "#16171a",
+    cursor: "pointer",
+    "&:hover": {
+      backgroundColor: "#131111",
+    },
+    fontFamily: "Montserrat",
+  };
 
   return (
     <ThemeProvider theme={darkTheme}>
-      <Container style={{ textAlign: "center" }}>
-        <Typography
-          variant="h4"
-          style={{ margin: 18, fontFamily: "Montserrat" }}
-        >
+      <Container sx={{ textAlign: "center" }}>
+        <Typography variant="h4" sx={{ margin: 2.2, fontFamily: "Montserrat" }}>
           Cryptocurrency Prices
         </Typography>
+
         <TextField
           label="Search for a Cryptocurrency"
           variant="outlined"
-          style={{ marginBottom: 20, width: "100%" }}
+          fullWidth
+          sx={{ marginBottom: 2.5 }}
           onChange={(e) => setSearch(e.target.value)}
         />
+
         <TableContainer component={Paper}>
           {loading ? (
-            <LinearProgress
-              variant="indeterminate"
-              style={{ backgroundColor: "gold" }}
-            />
+            <LinearProgress sx={{ backgroundColor: "gold" }} />
           ) : (
             <Table>
-              <TableHead style={{ backgroundColor: "#EEBC1D" }}>
+              <TableHead sx={{ backgroundColor: "#EEBC1D" }}>
                 <TableRow>
                   {["Coin", "Price", "24h Change", "Market Cap"].map((head) => (
                     <TableCell
-                      style={{
+                      key={head}
+                      align={head === "Coin" ? "left" : "right"}
+                      sx={{
                         color: "black",
                         fontWeight: "700",
                         fontFamily: "Montserrat",
                       }}
-                      key={head}
-                      align={head === "Coin" ? "" : "right"}
                     >
                       {head}
                     </TableCell>
                   ))}
                 </TableRow>
               </TableHead>
+
               <TableBody>
                 {handleSearch()
                   .slice((page - 1) * 10, (page - 1) * 10 + 10)
@@ -120,14 +115,14 @@ function CoinsTable() {
                     const profit = row.price_change_percentage_24h >= 0;
                     return (
                       <TableRow
-                        className={classes.row}
                         key={row.id}
+                        sx={rowStyle}
                         onClick={() => navigate(`coins/${row.id}`)}
                       >
                         <TableCell
-                          component={"th"}
+                          component="th"
                           scope="row"
-                          style={{ display: "flex", gap: 15 }}
+                          sx={{ display: "flex", gap: 2 }}
                         >
                           <img
                             src={row.image}
@@ -135,8 +130,8 @@ function CoinsTable() {
                             height={50}
                             style={{ marginBottom: 10 }}
                           />
-                          <div
-                            style={{ display: "flex", flexDirection: "column" }}
+                          <Box
+                            sx={{ display: "flex", flexDirection: "column" }}
                           >
                             <span
                               style={{
@@ -149,21 +144,23 @@ function CoinsTable() {
                             <span style={{ color: "darkgrey" }}>
                               {row.name}
                             </span>
-                          </div>
+                          </Box>
                         </TableCell>
+
                         <TableCell align="right">
                           {symbol}{" "}
                           {numberWithCommas(row.current_price.toFixed(2))}
                         </TableCell>
+
                         <TableCell
                           align="right"
-                          style={{
+                          sx={{
                             color: profit ? "rgb(14, 203, 129)" : "red",
                             fontWeight: 500,
                           }}
                         >
                           {profit && "+"}
-                          {row.price_change_percentage_24h.toFixed(2)}
+                          {row.price_change_percentage_24h.toFixed(2)}%
                         </TableCell>
 
                         <TableCell align="right">
@@ -180,20 +177,23 @@ function CoinsTable() {
             </Table>
           )}
         </TableContainer>
+
         <Pagination
-          style={{
-            padding: 20,
+          sx={{
+            padding: 2.5,
             width: "100%",
             display: "flex",
             justifyContent: "center",
+            "& .MuiPaginationItem-root": {
+              color: "gold",
+            },
           }}
+          count={Math.ceil(handleSearch().length / 10)}
           onChange={(_, value) => {
             setPage(value);
-            window.scroll(0, 450);
+            window.scrollTo({ top: 450, behavior: "smooth" });
           }}
-          classes={{ ul: classes.pagination }}
-          count={handleSearch()?.length / 10}
-        ></Pagination>
+        />
       </Container>
     </ThemeProvider>
   );
