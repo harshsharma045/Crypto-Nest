@@ -46,10 +46,7 @@ const useStyles = makeStyles((theme) => ({
     padding: 25,
     paddingTop: 10,
     width: "100%",
-    [theme.breakpoints.down("md")]: {
-      display: "flex",
-      justifyContent: "space-around",
-    },
+    
     [theme.breakpoints.down("sm")]: {
       flexDirection: "column",
       alignItems: "center",
@@ -134,7 +131,7 @@ function CoinsPage() {
           </span>
         </div>
       </div>
-      <div>
+      <div  style={{ width: "100%", height: "100%", minHeight: "400px" }}>
         <CoinsInfo coin={coins} />
       </div>
     </div>
