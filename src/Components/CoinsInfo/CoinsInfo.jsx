@@ -13,7 +13,6 @@ import SelectBtn from "../Btn/SelectBtn";
 import { styled } from "@mui/material/styles";
 import { useCryptoState } from "../../Context/CryptoContext";
 
-// Styled container as per your original code
 const StyledContainer = styled("div")(({ theme }) => ({
   width: "100%",
   maxWidth: "1200px",
