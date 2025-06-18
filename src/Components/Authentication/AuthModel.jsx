@@ -13,7 +13,7 @@ const style = {
   transform: "translate(-50%, -50%)",
   width: 400,
   bgcolor: "background.paper",
-  borderRadius: "10px"
+  borderRadius: "10px",
 };
 
 export default function BasicModal() {
@@ -58,8 +58,10 @@ export default function BasicModal() {
               <Tab style={{ width: 200 }} label="Login" />
               <Tab style={{ width: 200 }} label="Signup" />
             </Tabs>
-          </AppBar>{value === 0 && <Login handleClose={handleClose} />}
-            {value === 1 && <Signup handleClose={handleClose} />}
+          </AppBar>
+          {value === 0 && <Login handleClose={handleClose} />}
+          {value === 1 && <Signup handleClose={handleClose} />}
+          
         </Box>
       </Modal>
     </div>

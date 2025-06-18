@@ -11,9 +11,9 @@ import {
 import { Link } from "react-router-dom";
 import { useCryptoState } from "../../Context/CryptoContext";
 import AuthModel from "../Authentication/AuthModel";
-
+import UserSideBar from "./UserSideBar";
 function Header() {
-  const { currency, setCurrency } = useCryptoState();
+  const { currency, setCurrency, user } = useCryptoState();
 
   const darkTheme = createTheme({
     palette: {
@@ -64,11 +64,10 @@ function Header() {
               <MenuItem value={"INR"}>INR</MenuItem>
               <MenuItem value={"GBP"}>GBP</MenuItem>
             </Select>
-            <AuthModel/>
+            {user ? <UserSideBar /> : <AuthModel />}
           </Toolbar>
         </Container>
       </AppBar>
-      
     </ThemeProvider>
   );
 }

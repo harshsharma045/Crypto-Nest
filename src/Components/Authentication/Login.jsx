@@ -1,9 +1,38 @@
 import { useState } from "react";
 import { Box, Button, TextField } from "@mui/material";
+import { useCryptoState } from "../../Context/CryptoContext";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { auth } from "../../firebase";
 function Signup({ handleClose }) {
   const [email, setEmail] = useState("");
   const [pass, setPass] = useState("");
-  const handleSubmit = () => {};
+  const { setAlert } = useCryptoState();
+
+  const handleSubmit = async () => {
+    if (!pass || !email) {
+      setAlert({
+        open: true,
+        msg: "Please fill all the field",
+        type: "error",
+      });
+      return;
+    }
+    try {
+      const result = await signInWithEmailAndPassword(auth, email, pass);
+      setAlert({
+        open: true,
+        msg: `Sign Up Successful, Welcom ${result.user.email}`,
+        type: "success",
+      });
+    } catch (e) {
+      setAlert({
+        open: true,
+        msg: e.message,
+        type: "error",
+      });
+    }
+    handleClose();
+  };
   return (
     <Box
       p={3}
