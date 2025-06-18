@@ -10,6 +10,7 @@ import {
 } from "@mui/material";
 import { Link } from "react-router-dom";
 import { useCryptoState } from "../../Context/CryptoContext";
+import AuthModel from "../Authentication/AuthModel";
 
 function Header() {
   const { currency, setCurrency } = useCryptoState();
@@ -63,9 +64,11 @@ function Header() {
               <MenuItem value={"INR"}>INR</MenuItem>
               <MenuItem value={"GBP"}>GBP</MenuItem>
             </Select>
+            <AuthModel/>
           </Toolbar>
         </Container>
       </AppBar>
+      
     </ThemeProvider>
   );
 }

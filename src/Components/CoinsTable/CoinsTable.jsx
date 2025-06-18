@@ -1,8 +1,6 @@
 import { useState, useEffect } from "react";
 import { useCryptoState } from "../../Context/CryptoContext";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
-import { CoinList } from "../../Config/api";
 
 import {
   ThemeProvider,
@@ -25,13 +23,11 @@ import {
 import { numberWithCommas } from "../Banner/Carousel";
 
 function CoinsTable() {
-  const [coins, setCoins] = useState([]);
-  const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
-
+  
   const navigate = useNavigate();
-  const { currency, symbol } = useCryptoState();
+  const { currency, symbol, loading, coins, fetchCoins } = useCryptoState();
 
   const darkTheme = createTheme({
     palette: {
@@ -41,13 +37,6 @@ function CoinsTable() {
       mode: "dark",
     },
   });
-
-  const fetchCoins = async () => {
-    setLoading(true);
-    const { data } = await axios.get(CoinList(currency));
-    setCoins(data);
-    setLoading(false);
-  };
 
   useEffect(() => {
     fetchCoins();
