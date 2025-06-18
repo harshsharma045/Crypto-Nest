@@ -1,11 +1,15 @@
 import * as React from "react";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
-import Typography from "@mui/material/Typography";
 import Modal from "@mui/material/Modal";
-import { AppBar, Paper, Tab, Tabs } from "@mui/material";
+import { AppBar, Tab, Tabs } from "@mui/material";
 import Signup from "./Signup";
 import Login from "./Login";
+import GoogleButton from "react-google-button";
+import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import { auth } from "../../firebase";
+import { useCryptoState } from "../../Context/CryptoContext";
+
 const style = {
   position: "absolute",
   top: "50%",
@@ -23,6 +27,29 @@ export default function BasicModal() {
   const [value, setValue] = React.useState(0);
   const handleChange = (event, newValue) => {
     setValue(newValue);
+  };
+  const { setAlert } = useCryptoState();
+
+  const googleProvider = new GoogleAuthProvider();
+
+  const signinWithGoogle = () => {
+    signInWithPopup(auth, googleProvider)
+      .then((res) => {
+        setAlert({
+          open: true,
+          type: "success",
+          msg: "Logout Successful!",
+        });
+        handleClose();
+      })
+      .catch((e) => {
+        setAlert({
+          open: true,
+          type: "error",
+          msg: e.message,
+        });
+        return;
+      });
   };
 
   return (
@@ -61,7 +88,26 @@ export default function BasicModal() {
           </AppBar>
           {value === 0 && <Login handleClose={handleClose} />}
           {value === 1 && <Signup handleClose={handleClose} />}
-          
+          <Box
+            className="google"
+            sx={{
+              color: "white",
+              padding: 2,
+              paddingTop: 0,
+              display: "flex",
+              flexDirection: "column",
+              textAlign: "center",
+              gap: 1,
+              fontSize: 20,
+            }}
+          >
+            <span>OR</span>
+            <GoogleButton
+              style={{ width: "100%", outline: "none" }}
+              onClick={signinWithGoogle}
+              type="dark"
+            ></GoogleButton>
+          </Box>
         </Box>
       </Modal>
     </div>
