@@ -1,7 +1,6 @@
 import "./App.css";
 import { Outlet } from "react-router-dom";
 import Header from "./Components/Header/Header";
-import Footer from "./Components/Footer/Footer";
 import { Box } from "@mui/material";
 import AlertDisplay from "./Components/AlertDisplay";
 function App() {
@@ -16,7 +15,6 @@ function App() {
       >
         <Header />
         <Outlet />
-        <Footer />
       </Box>
       <AlertDisplay />
     </>
