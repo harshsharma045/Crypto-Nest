@@ -63,7 +63,7 @@ function UserSideBar() {
           height: 38,
           width: 38,
           marginLeft: 15,
-          cursor: "p7ointer",
+          cursor: "pointer",
           backgroundColor: "#EEBC1D",
         }}
         onClick={toggleDrawer(true)}
@@ -160,7 +160,7 @@ function UserSideBar() {
                           boxShadow: "0 0 3px black",
                         }}
                       >
-                        <Link
+                        <Link style={{color:"black",}}
                           to={`/coins/${coin.id}`}
                           onClick={toggleDrawer(false)}
                         >
