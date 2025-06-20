@@ -25,7 +25,7 @@ import { numberWithCommas } from "../Banner/Carousel";
 function CoinsTable() {
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
-  
+
   const navigate = useNavigate();
   const { currency, symbol, loading, coins, fetchCoins } = useCryptoState();
 

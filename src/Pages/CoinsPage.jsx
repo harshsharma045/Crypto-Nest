@@ -1,25 +1,44 @@
 import { useParams } from "react-router-dom";
-import { useState, useEffect } from "react";
+import {
+  useState,
+  useEffect,
+  useCallback,
+  useMemo,
+  lazy,
+  Suspense,
+} from "react";
 import { LinearProgress, Typography, Box, Button } from "@mui/material";
 import axios from "axios";
 import { SingleCoin } from "../Config/api";
 import { useCryptoState } from "../Context/CryptoContext";
-import CoinsInfo from "../Components/CoinsInfo/CoinsInfo";
 import { numberWithCommas } from "../Components/Banner/Carousel";
 import { doc, setDoc } from "firebase/firestore";
 import { db } from "../firebase";
+
+const CoinsInfo = lazy(() => import("../Components/CoinsInfo/CoinsInfo"));
 
 function CoinsPage() {
   const { id } = useParams();
   const [coin, setCoins] = useState(null);
   const { currency, symbol, user, setAlert, watchlist } = useCryptoState();
 
-  const fetchCoin = async () => {
-    const { data } = await axios.get(SingleCoin(id));
-    setCoins(data);
-  };
+  const fetchCoin = useCallback(async () => {
+    try {
+      const { data } = await axios.get(SingleCoin(id));
+      setCoins(data);
+    } catch (e) {
+      setAlert?.({
+        open: true,
+        msg: "Failed to get coin Info.",
+        type: "error",
+      });
+    }
+  }, [id]);
 
-  const inWatchlist = watchlist.includes(coin?.id);
+  const inWatchlist = useMemo(
+    () => watchlist.includes(coin?.id),
+    [watchlist, coin?.id]
+  );
   const addToWatchList = async () => {
     const coinRef = doc(db, "watchlist", user.uid);
     try {
@@ -65,7 +84,7 @@ function CoinsPage() {
     fetchCoin();
   }, []);
 
-  if (!coin) {
+  if (!coin || (user && !user.uid)) {
     return (
       <LinearProgress
         sx={{ backgroundColor: "gold", width: "100%", marginTop: 2 }}
@@ -198,7 +217,9 @@ function CoinsPage() {
           marginLeft: { md: 5 },
         }}
       >
-        <CoinsInfo coin={coin} />
+        <Suspense fallback={<LinearProgress />}>
+          <CoinsInfo coin={coin} />
+        </Suspense>
       </Box>
     </Box>
   );

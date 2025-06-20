@@ -7,6 +7,7 @@ import {
   createTheme,
   ThemeProvider,
   Typography,
+  Box,
 } from "@mui/material";
 import { Link } from "react-router-dom";
 import { useCryptoState } from "../../Context/CryptoContext";
@@ -33,27 +34,42 @@ function Header() {
             <Typography
               sx={{
                 flex: 1,
-                color: "gold",
-                fontFamily: "Montserrat",
-                fontWeight: "bold",
+                display: "flex",
+                alignItems: "center",
+                gap: 1,
+                textDecoration: "none",
                 cursor: "pointer",
-                textDecoration: "none", 
               }}
               component={Link}
               to="/"
             >
-              <img
-                style={{ height: "45px", width: "30px", paddingBottom:10,
+              <Box
+                component="img"
+                src="/CryptoNestLogo.png"
+                alt="Crypto-Nest Icon"
+                sx={{
+                  height: { xs: 30, sm: 40, md: 45 },
+                  width: "auto",
+                  transition: "transform 0.3s",
+                  "&:hover": {
+                    transform: "scale(1.1)",
+                  },
                 }}
-                src="../../../CryptoNestLogo.png"
-                alt="Crypto-Nest"
               />
-              <img
-                style={{ height: "50px", width: "200px"}}
-                src="../../../Crypto-Nest Logo.png"
-                alt="Crypto-Nest"
+              <Box
+                component="img"
+                src="/Crypto-Nest Logo.png"
+                alt="Crypto-Nest Text"
+                sx={{
+                  height: { xs: 35, sm: 45, md: 50 },
+                  width: "auto",
+                  transition: "transform 0.3s",
+                  display: { xs: "none", sm: "block" },
+                  "&:hover": {
+                    transform: "scale(1.05)",
+                  },
+                }}
               />
-              {/* Crypto-Nest */}
             </Typography>
 
             <Select

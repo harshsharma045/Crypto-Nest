@@ -1,8 +1,4 @@
-import {
-  CircularProgress,
-  createTheme,
-  ThemeProvider,
-} from "@mui/material";
+import { CircularProgress, createTheme, ThemeProvider } from "@mui/material";
 import { Chart as ChartJS } from "chart.js/auto";
 import { Line } from "react-chartjs-2";
 import { useEffect, useState } from "react";
@@ -39,9 +35,7 @@ function CoinsInfo({ coin }) {
 
   const fetchHistoricData = async () => {
     setLoading(true);
-    const { data } = await axios.get(
-      HistoricalChart(coin.id, days, currency)
-    );
+    const { data } = await axios.get(HistoricalChart(coin.id, days, currency));
     setHistoricData(data.prices);
     setLoading(false);
   };
@@ -68,7 +62,6 @@ function CoinsInfo({ coin }) {
           />
         ) : (
           <>
-            
             <div style={{ width: "100%", height: "500px" }}>
               <Line
                 data={{
@@ -76,11 +69,13 @@ function CoinsInfo({ coin }) {
                     let date = new Date(coin[0]);
                     let time =
                       date.getHours() > 12
-                        ? `${date.getHours() - 12}:${String(date.getMinutes()).padStart(2, "0")} PM`
-                        : `${date.getHours()}:${String(date.getMinutes()).padStart(2, "0")} AM`;
-                    return days === 1
-                      ? time
-                      : date.toLocaleDateString();
+                        ? `${date.getHours() - 12}:${String(
+                            date.getMinutes()
+                          ).padStart(2, "0")} PM`
+                        : `${date.getHours()}:${String(
+                            date.getMinutes()
+                          ).padStart(2, "0")} AM`;
+                    return days === 1 ? time : date.toLocaleDateString();
                   }),
                   datasets: [
                     {

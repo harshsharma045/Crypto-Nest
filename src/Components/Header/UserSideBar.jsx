@@ -7,10 +7,12 @@ import { numberWithCommas } from "../Banner/Carousel";
 import { AiFillDelete } from "react-icons/ai";
 import { doc, setDoc } from "firebase/firestore";
 import { Link } from "react-router-dom";
+import { IoMdCloseCircleOutline } from "react-icons/io";
 
 function UserSideBar() {
   const [isOpen, setIsOpen] = useState(false);
-  const { user, setAlert, watchlist, coins, symbol,userName} = useCryptoState();
+  const { user, setAlert, watchlist, coins, symbol, userName } =
+    useCryptoState();
   const toggleDrawer = (open) => (event) => {
     // Prevent closing drawer with Tab or Shift key
     if (
@@ -30,8 +32,6 @@ function UserSideBar() {
     });
     toggleDrawer();
   };
-
-  
 
   const removeFromWatchlist = async (coin) => {
     const coinRef = doc(db, "watchlist", user.uid);
@@ -83,6 +83,10 @@ function UserSideBar() {
           role="presentation"
           onKeyDown={toggleDrawer(false)}
         >
+          <IoMdCloseCircleOutline
+            onClick={toggleDrawer(false)}
+            style={{ height: 30, width: 30, cursor: "pointer" }}
+          />
           <div
             style={{
               flex: 1,
@@ -155,8 +159,13 @@ function UserSideBar() {
                           backgroundColor: "#EEBC1D",
                           boxShadow: "0 0 3px black",
                         }}
-                      ><Link to={`/coins/${coin.id}`} onClick={toggleDrawer(false)}>
-                        <span>{coin.name}</span></Link>
+                      >
+                        <Link
+                          to={`/coins/${coin.id}`}
+                          onClick={toggleDrawer(false)}
+                        >
+                          <span>{coin.name}</span>
+                        </Link>
 
                         <span
                           style={{

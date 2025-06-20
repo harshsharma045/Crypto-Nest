@@ -5,7 +5,7 @@ function Banner() {
   return (
     <Box
       sx={{
-        backgroundImage: "url(../../bannerimg.jpg)",
+        backgroundImage: "url(/bannerimg.jpg)",
       }}
     >
       <Container
@@ -34,7 +34,7 @@ function Banner() {
               fontFamily: "Montserrat",
             }}
           >
-            Crypto Tracker
+            Crypto-Nest
           </Typography>
           <Typography
             variant="subtitle2"
