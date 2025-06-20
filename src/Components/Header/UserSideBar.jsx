@@ -1,13 +1,16 @@
 import { useState } from "react";
-import { Box, Drawer, Button, Typography, Avatar } from "@mui/material";
+import { Box, Drawer, Button, Avatar } from "@mui/material";
 import { useCryptoState } from "../../Context/CryptoContext";
 import { signOut } from "firebase/auth";
-import { auth } from "../../firebase";
+import { auth, db } from "../../firebase";
+import { numberWithCommas } from "../Banner/Carousel";
+import { AiFillDelete } from "react-icons/ai";
+import { doc, setDoc } from "firebase/firestore";
+import { Link } from "react-router-dom";
 
 function UserSideBar() {
   const [isOpen, setIsOpen] = useState(false);
-  const { user, setAlert } = useCryptoState();
-
+  const { user, setAlert, watchlist, coins, symbol,userName} = useCryptoState();
   const toggleDrawer = (open) => (event) => {
     // Prevent closing drawer with Tab or Shift key
     if (
@@ -19,28 +22,39 @@ function UserSideBar() {
     setIsOpen(open);
   };
   const logout = () => {
-    signOut(auth)
+    signOut(auth);
     setAlert({
-        open: true,
-        type: "success",
-        msg: "Logout Successful!"
-    })
-    toggleDrawer()
+      open: true,
+      type: "success",
+      msg: "Logout Successful!",
+    });
+    toggleDrawer();
   };
 
-  function getUserName(str) {
-    const specialChars = ["@", "."];
-    let index = str.length;
+  
 
-    for (const char of specialChars) {
-      const charIndex = str.indexOf(char);
-      if (charIndex !== -1 && charIndex < index) {
-        index = charIndex;
-      }
+  const removeFromWatchlist = async (coin) => {
+    const coinRef = doc(db, "watchlist", user.uid);
+    try {
+      await setDoc(
+        coinRef,
+        { coins: watchlist.filter((wish) => wish !== coin?.id) },
+        { merge: true }
+      );
+
+      setAlert({
+        open: true,
+        msg: `${coin.name} Removed from the Watchlist!`,
+        type: "success",
+      });
+    } catch (error) {
+      setAlert({
+        open: true,
+        message: error.message,
+        type: "error",
+      });
     }
-
-    return str.toUpperCase().substring(0, index);
-  }
+  };
 
   return (
     <Box>
@@ -49,12 +63,12 @@ function UserSideBar() {
           height: 38,
           width: 38,
           marginLeft: 15,
-          cursor: "pointer",
+          cursor: "p7ointer",
           backgroundColor: "#EEBC1D",
         }}
         onClick={toggleDrawer(true)}
         src={user.photoURL}
-        alt={user.displayName || getUserName(user.email)}
+        alt={user.displayName || userName}
       />
       <Drawer anchor="right" open={isOpen} onClose={toggleDrawer(false)}>
         <Box
@@ -87,7 +101,7 @@ function UserSideBar() {
                 cursor: "pointer",
                 backgroundColor: "#EEBC1D",
               }}
-              alt={user.displayName || getUserName(user.email)}
+              alt={user.displayName || userName}
               src={user.photoURL}
             />
             <span
@@ -99,9 +113,11 @@ function UserSideBar() {
                 wordWrap: "break-word",
               }}
             >
-              {user.displayName || getUserName(user.email)}
+              {user.displayName || userName}
             </span>
-            <div className="wishlist" style={{
+            <div
+              className="wishlist"
+              style={{
                 flex: 1,
                 width: "100%",
                 backgroundColor: "grey",
@@ -113,12 +129,60 @@ function UserSideBar() {
                 alignItems: "center",
                 gap: 12,
                 overflowY: "scroll",
-                overflow: "hidden"
+                overflow: "hidden",
+              }}
+            >
+              <span
+                style={{
+                  fontSize: 15,
+                  textShadow: "0 0 5px black",
+                }}
+              >
+                WatchList
+              </span>
+              <span>
+                {coins.map((coin) => {
+                  if (watchlist.includes(coin.id)) {
+                    return (
+                      <div
+                        style={{
+                          padding: 10,
+                          borderRadius: 5,
+                          color: "black",
+                          width: "300px",
+                          justifyContent: "space-between",
+                          alignItems: "center",
+                          backgroundColor: "#EEBC1D",
+                          boxShadow: "0 0 3px black",
+                        }}
+                      ><Link to={`/coins/${coin.id}`} onClick={toggleDrawer(false)}>
+                        <span>{coin.name}</span></Link>
 
-            }}>
-                <span style={{
-                fontSize: 15, textShadow: "0 0 5px black"
-            }}>WatchList</span>
+                        <span
+                          style={{
+                            display: "flex",
+                            gap: 8,
+                            justifyContent: "space-between",
+                          }}
+                        >
+                          {" "}
+                          <span>
+                            {symbol}
+                            {numberWithCommas(coin.current_price.toFixed(2))}
+                          </span>
+                          <AiFillDelete
+                            style={{
+                              cursor: "pointer",
+                            }}
+                            fontSize="16"
+                            onClick={() => removeFromWatchlist(coin)}
+                          ></AiFillDelete>
+                        </span>
+                      </div>
+                    );
+                  }
+                })}
+              </span>
             </div>
           </div>
           <Button

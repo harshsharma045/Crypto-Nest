@@ -3,15 +3,16 @@ import {
   Container,
   MenuItem,
   Toolbar,
-  Typography,
   Select,
   createTheme,
   ThemeProvider,
+  Typography,
 } from "@mui/material";
 import { Link } from "react-router-dom";
 import { useCryptoState } from "../../Context/CryptoContext";
 import AuthModel from "../Authentication/AuthModel";
 import UserSideBar from "./UserSideBar";
+
 function Header() {
   const { currency, setCurrency, user } = useCryptoState();
 
@@ -30,19 +31,29 @@ function Header() {
         <Container>
           <Toolbar>
             <Typography
-              variant="h6"
               sx={{
                 flex: 1,
                 color: "gold",
                 fontFamily: "Montserrat",
                 fontWeight: "bold",
                 cursor: "pointer",
-                textDecoration: "none",
+                textDecoration: "none", 
               }}
               component={Link}
               to="/"
             >
-              Crypto Tracker
+              <img
+                style={{ height: "45px", width: "30px", paddingBottom:10,
+                }}
+                src="../../../CryptoNestLogo.png"
+                alt="Crypto-Nest"
+              />
+              <img
+                style={{ height: "50px", width: "200px"}}
+                src="../../../Crypto-Nest Logo.png"
+                alt="Crypto-Nest"
+              />
+              {/* Crypto-Nest */}
             </Typography>
 
             <Select

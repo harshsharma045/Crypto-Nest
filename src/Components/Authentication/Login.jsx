@@ -6,7 +6,7 @@ import { auth } from "../../firebase";
 function Signup({ handleClose }) {
   const [email, setEmail] = useState("");
   const [pass, setPass] = useState("");
-  const { setAlert } = useCryptoState();
+  const { setAlert, userName } = useCryptoState();
 
   const handleSubmit = async () => {
     if (!pass || !email) {
@@ -18,10 +18,10 @@ function Signup({ handleClose }) {
       return;
     }
     try {
-      const result = await signInWithEmailAndPassword(auth, email, pass);
+      await signInWithEmailAndPassword(auth, email, pass);
       setAlert({
         open: true,
-        msg: `Sign Up Successful, Welcom ${result.user.email}`,
+        msg: `Sign Up Successful, Welcom ${userName}`,
         type: "success",
       });
     } catch (e) {

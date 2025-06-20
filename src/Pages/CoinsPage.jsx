@@ -1,32 +1,71 @@
 import { useParams } from "react-router-dom";
 import { useState, useEffect } from "react";
-import {
-  LinearProgress,
-  Typography,
-  Box,
-  
-} from "@mui/material";
+import { LinearProgress, Typography, Box, Button } from "@mui/material";
 import axios from "axios";
 import { SingleCoin } from "../Config/api";
 import { useCryptoState } from "../Context/CryptoContext";
 import CoinsInfo from "../Components/CoinsInfo/CoinsInfo";
 import { numberWithCommas } from "../Components/Banner/Carousel";
+import { doc, setDoc } from "firebase/firestore";
+import { db } from "../firebase";
 
 function CoinsPage() {
   const { id } = useParams();
-  const [coins, setCoins] = useState(null);
-  const { currency, symbol } = useCryptoState();
+  const [coin, setCoins] = useState(null);
+  const { currency, symbol, user, setAlert, watchlist } = useCryptoState();
 
   const fetchCoin = async () => {
     const { data } = await axios.get(SingleCoin(id));
     setCoins(data);
   };
 
+  const inWatchlist = watchlist.includes(coin?.id);
+  const addToWatchList = async () => {
+    const coinRef = doc(db, "watchlist", user.uid);
+    try {
+      await setDoc(coinRef, {
+        coins: watchlist ? [...watchlist, coin?.id] : [coin?.id],
+      });
+      setAlert({
+        open: true,
+        msg: `${coin.name} Added To Watchlist!`,
+        type: "success",
+      });
+    } catch (error) {
+      setAlert({
+        open: true,
+        msg: error.message,
+        type: "error",
+      });
+    }
+  };
+  const removeFromWatchList = async () => {
+    const coinRef = doc(db, "watchlist", user.uid);
+    try {
+      await setDoc(
+        coinRef,
+        { coins: watchlist.filter((w) => w !== coin?.id) },
+        { merge: true }
+      );
+      setAlert({
+        open: true,
+        msg: `${coin.name} Remove From The Watchlist!`,
+        type: "success",
+      });
+    } catch (error) {
+      setAlert({
+        open: true,
+        msg: error.message,
+        type: "error",
+      });
+    }
+  };
+
   useEffect(() => {
     fetchCoin();
   }, []);
 
-  if (!coins) {
+  if (!coin) {
     return (
       <LinearProgress
         sx={{ backgroundColor: "gold", width: "100%", marginTop: 2 }}
@@ -37,7 +76,6 @@ function CoinsPage() {
   return (
     <Box
       sx={{
-        
         display: "flex",
         flexDirection: { xs: "column", md: "row" },
         padding: { xs: 2, md: 5 },
@@ -62,8 +100,8 @@ function CoinsPage() {
           }}
         >
           <img
-            src={coins?.image.large}
-            alt={coins?.name}
+            src={coin?.image.large}
+            alt={coin?.name}
             height="200"
             style={{ marginBottom: 20 }}
           />
@@ -77,7 +115,7 @@ function CoinsPage() {
               textAlign: "center",
             }}
           >
-            {coins?.name}
+            {coin?.name}
           </Typography>
 
           <Typography
@@ -88,7 +126,7 @@ function CoinsPage() {
               paddingX: 2,
             }}
           >
-            {coins?.description.en.split(". ")[0]}.
+            {coin?.description.en.split(". ")[0]}.
           </Typography>
 
           <Box sx={{ marginTop: 4, width: "100%", paddingX: 2 }}>
@@ -99,7 +137,7 @@ function CoinsPage() {
                 Rank:
               </Typography>
               <Typography variant="h6">
-                {numberWithCommas(coins.market_cap_rank)}
+                {numberWithCommas(coin.market_cap_rank)}
               </Typography>
             </Box>
 
@@ -112,7 +150,7 @@ function CoinsPage() {
               <Typography variant="h6">
                 {symbol}{" "}
                 {numberWithCommas(
-                  coins.market_data.current_price[currency.toLowerCase()]
+                  coin.market_data.current_price[currency.toLowerCase()]
                 )}
               </Typography>
             </Box>
@@ -126,7 +164,7 @@ function CoinsPage() {
               <Typography variant="h6">
                 {symbol}{" "}
                 {numberWithCommas(
-                  coins.market_data.market_cap[currency.toLowerCase()]
+                  coin.market_data.market_cap[currency.toLowerCase()]
                     .toString()
                     .slice(0, -6)
                 )}
@@ -134,6 +172,21 @@ function CoinsPage() {
               </Typography>
             </Box>
           </Box>
+          {user && (
+            <Button
+              className="Watchlist"
+              variant="outlined"
+              sx={{
+                width: { md: "100%", sm: "50%" },
+                height: 40,
+                backgroundColor: inWatchlist ? "red" : "#EEBC1D",
+                color: "white",
+              }}
+              onClick={inWatchlist ? removeFromWatchList : addToWatchList}
+            >
+              {inWatchlist ? "Remove From WatchList" : "Add to WatchList"}
+            </Button>
+          )}
         </Box>
       </Box>
 
@@ -145,7 +198,7 @@ function CoinsPage() {
           marginLeft: { md: 5 },
         }}
       >
-        <CoinsInfo coin={coins} />
+        <CoinsInfo coin={coin} />
       </Box>
     </Box>
   );
